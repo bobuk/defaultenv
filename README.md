@@ -3,7 +3,7 @@
 Environment and config file reader for python3.
 **Warrning:** slightly magic inside. This module magically read and use environment value both from '.env' file and environment itself.
 
-```
+```python
 $ echo "MY_VAL='test'" > .env
 $ python
 >>> from defaultenv import env
@@ -17,4 +17,7 @@ $ python
 
 ```
 
-So, use `env` method to check the value of variable. If variable is not defined `env` method will return `None`.
+`env` method may be used to check the value of variable.
+If variable is not defined `env` method will return `None`.
+If both environment variable and corresponding .env record is exist then  .env have a priority.
+And yes, you can use `os.environ` instead of  `env()`, all records from .env will be exported immidiately.
