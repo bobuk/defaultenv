@@ -1,6 +1,6 @@
 # defaultenv
 
-Environment and config file reader for python.
+Environment and config file reader for python3.
 **Warrning:** slightly magic inside. This module magically read and use environment value both from '.env' file and environment itself.
 
 ```
