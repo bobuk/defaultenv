@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup, find_packages
 setup(name="defaultenv", version="0.0.1",
       py_modules=['defaultenv'],
       url="http://github.com/bobuk/defaultenv",
