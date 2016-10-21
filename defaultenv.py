@@ -21,12 +21,8 @@ if os.path.exists('.env'):
                     val = ast.literal_eval(val)
                 except: pass
 
-                os.environ[key] = val
+                os.environ[key] = str(val)
             cont = ""
 
 def env(key, default = None):
     return os.environ.get(key, default)
-
-if __name__ == '__main__':
-    import pprint
-    pprint.pprint(dict(os.environ))
