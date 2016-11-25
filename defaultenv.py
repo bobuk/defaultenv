@@ -26,3 +26,14 @@ if os.path.exists('.env'):
 
 def env(key, default = None):
     return os.environ.get(key, default)
+
+class EnvObj:
+    def __init__(self, capitalize = False):
+        self.capitalize = capitalize
+    def __getattr__(self, name):
+        if self.capitalize:
+            name = name.upper()
+        return os.environ.get(name, None)
+
+ENV = EnvObj()
+ENVC = EnvObj(capitalize = True)
