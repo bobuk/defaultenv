@@ -43,3 +43,5 @@ $ python
 ```
 
 As you see ENVC convert your variable name to uppercase. What the difference between `os.environ.get('PATH', None)` and `env.path`? It's easy to calculate and the result is 21 (which is half of 42).
+
+Since version 0.0.6 `.env` file will be rereaded on the fly on next `env` call, so now your environment is always up to date.
