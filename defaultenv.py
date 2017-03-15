@@ -30,8 +30,11 @@ def read_env_file(fname = __fname__):
         __env_timestamp__ = os.path.getmtime(fname)
 
 def env(key, default = None):
-    if os.path.getmtime(__fname__) > __env_timestamp__:
-        read_env_file()
+    try:
+        if os.path.getmtime(__fname__) > __env_timestamp__:
+            read_env_file()
+    except:
+        pass
     return os.environ.get(key, default)
 
 class EnvObj:
