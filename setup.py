@@ -1,5 +1,5 @@
 from setuptools import setup, find_packages
-setup(name="defaultenv", version="0.0.6",
+setup(name="defaultenv", version="0.0.7",
       py_modules=['defaultenv'],
       url="http://github.com/bobuk/defaultenv",
       author="Grigory Bakunov",
