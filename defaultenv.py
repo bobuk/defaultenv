@@ -35,15 +35,27 @@ def env(key, default = None):
             read_env_file()
     except:
         pass
-    return os.environ.get(key, default)
+    key = os.environ[key] if key in os.environ else None
+    if default and key and callable(default):
+        return default(key)
+
+    return key if key else default
+        
+
+        
 
 class EnvObj:
     def __init__(self, capitalize = False):
         self.capitalize = capitalize
+        self.default = {}
+
+    def defaults(self, **params):
+        self.default = params if not self.capitalize else {k.upper(): v for k,v in params.items()}
+        return self
     def __getattr__(self, name):
         if self.capitalize:
             name = name.upper()
-        return env(name)
+        return env(name, default = self.default.get(name, None))
 
 ENV = EnvObj()
 ENVC = EnvObj(capitalize = True)
