@@ -79,3 +79,11 @@ For both ENVC and ENV there's a method `defaults` to add default values of calla
 
 What the difference between `os.environ.get('PATH', None)` and `env.path`? It's easy to calculate and the result is 21 (which is half of 42).
 
+Since version 0.0.9 you can use even more authomated `ENVCD` which is `ENVC` but with predefined defaults.
+Every path (or colon-separated paths list) will be defaulted to `PosixPath`, every digital value converted to `int`.
+
+```python
+>>> from defaultenv import ENVCD as env
+>>> env.path
+[PosixPath('/usr/local/bin'), PosixPath('/usr/local/bin'), PosixPath('/usr/bin'), PosixPath('/bin'), PosixPath('/usr/sbin')]
+```

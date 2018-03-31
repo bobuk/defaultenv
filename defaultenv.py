@@ -1,4 +1,4 @@
-import os, sys, ast, os.path
+import os, sys, ast, os.path, pathlib
 
 __env_timestamp__ = 0.0
 __fname__ = '.env'
@@ -17,7 +17,7 @@ def read_env_file(fname = __fname__):
                     continue
                 if len(line) > 1:
                     if '=' not in line:
-                        sys.stderr.write('Err in .env, line ' + str(num) + ': ' + line + '\n')
+                        sys.stderr.write('Err in {fname} line {num}: {line}\n'.format_map(locals()))
                     key, val = line.split('=')
                     key = key.strip().upper()
                     val = val.strip()
@@ -36,26 +36,41 @@ def env(key, default = None):
     except:
         pass
     key = os.environ[key] if key in os.environ else None
-    if default and key and callable(default):
+    if not key:
+        return default(key) if callable(default) else default
+    if default and callable(default):
         return default(key)
+    return key
 
-    return key if key else default
-        
-
-        
+def auto_default(val):
+    if not val: return val
+    if val.isdigit():
+        return int(val)
+    if val.startswith('/'):
+        if ':' in val:
+            return [pathlib.Path(_) for _ in val.split(':')]
+        return pathlib.Path(val)
+    return val
 
 class EnvObj:
     def __init__(self, capitalize = False):
         self.capitalize = capitalize
         self.default = {}
+        self.default_default = None
 
     def defaults(self, **params):
         self.default = params if not self.capitalize else {k.upper(): v for k,v in params.items()}
         return self
+
+    def pretty_good_defaults(self):
+        self.default_default = auto_default
+        return self
+
     def __getattr__(self, name):
         if self.capitalize:
             name = name.upper()
-        return env(name, default = self.default.get(name, None))
+        return env(name, default = self.default.get(name, self.default_default))
 
 ENV = EnvObj()
 ENVC = EnvObj(capitalize = True)
+ENVCD = EnvObj(capitalize = True).pretty_good_defaults()
