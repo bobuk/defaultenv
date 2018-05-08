@@ -1,35 +1,40 @@
 import os, sys, ast, os.path, pathlib
 
 __env_timestamp__ = 0.0
-__fname__ = '.env'
+__fname__ = ".env"
 
-def read_env_file(fname = __fname__):
+
+def read_env_file(fname=__fname__):
     if os.path.exists(fname):
-        with open(fname, 'r') as fl:
+        with open(fname, "r") as fl:
             cont = ""
             for num, line in enumerate(fl):
                 line = cont + line.lstrip()
                 line = line.strip()
-                if '#' in line:
-                    line = line.split('#', 1)[0].strip()
-                if line.endswith('\\'):
+                if "#" in line:
+                    line = line.split("#", 1)[0].strip()
+                if line.endswith("\\"):
                     cont = line[:-1]
                     continue
                 if len(line) > 1:
-                    if '=' not in line:
-                        sys.stderr.write('Err in {fname} line {num}: {line}\n'.format_map(locals()))
-                    key, val = line.split('=')
+                    if "=" not in line:
+                        sys.stderr.write(
+                            "Err in {fname} line {num}: {line}\n".format_map(locals())
+                        )
+                    key, val = line.split("=")
                     key = key.strip().upper()
                     val = val.strip()
                     try:
                         val = ast.literal_eval(val)
-                    except: pass
+                    except:
+                        pass
 
                     os.environ[key] = str(val)
                 cont = ""
         __env_timestamp__ = os.path.getmtime(fname)
 
-def env(key, default = None):
+
+def env(key, default=None):
     try:
         if os.path.getmtime(__fname__) > __env_timestamp__:
             read_env_file()
@@ -42,24 +47,30 @@ def env(key, default = None):
         return default(key)
     return key
 
+
 def auto_default(val):
-    if not val: return val
+    if not val:
+        return val
     if val.isdigit():
         return int(val)
-    if val.startswith('/'):
-        if ':' in val:
-            return [pathlib.Path(_) for _ in val.split(':')]
+    if val.startswith("/"):
+        if ":" in val:
+            return [pathlib.Path(_) for _ in val.split(":")]
         return pathlib.Path(val)
     return val
 
+
 class EnvObj:
-    def __init__(self, capitalize = False):
+
+    def __init__(self, capitalize=False):
         self.capitalize = capitalize
         self.default = {}
         self.default_default = None
 
     def defaults(self, **params):
-        self.default = params if not self.capitalize else {k.upper(): v for k,v in params.items()}
+        self.default = params if not self.capitalize else {
+            k.upper(): v for k, v in params.items()
+        }
         return self
 
     def pretty_good_defaults(self):
@@ -69,8 +80,9 @@ class EnvObj:
     def __getattr__(self, name):
         if self.capitalize:
             name = name.upper()
-        return env(name, default = self.default.get(name, self.default_default))
+        return env(name, default=self.default.get(name, self.default_default))
+
 
 ENV = EnvObj()
-ENVC = EnvObj(capitalize = True)
-ENVCD = EnvObj(capitalize = True).pretty_good_defaults()
+ENVC = EnvObj(capitalize=True)
+ENVCD = EnvObj(capitalize=True).pretty_good_defaults()
