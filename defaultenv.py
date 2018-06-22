@@ -34,12 +34,17 @@ def read_env_file(fname=__fname__):
         __env_timestamp__ = os.path.getmtime(fname)
 
 
-def env(key, default=None):
+def load_env_file():
     try:
         if os.path.getmtime(__fname__) > __env_timestamp__:
             read_env_file()
     except:
         pass
+
+
+def env(key, default=None):
+    load_env_file()
+
     key = os.environ[key] if key in os.environ else None
     if not key:
         return default(key) if callable(default) else default
