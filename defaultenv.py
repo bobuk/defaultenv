@@ -1,13 +1,16 @@
+import typing
 import os, sys, ast, os.path, pathlib
 
 __env_timestamp__ = 0.0
 __fname__ = ".env"
 
 
-def read_env_file(fname=__fname__):
+def read_env_file(fname:str =__fname__) -> None:
     if os.path.exists(fname):
         with open(fname, "r") as fl:
-            cont = ""
+            cont: str = ""
+            num: int
+            line: str
             for num, line in enumerate(fl):
                 line = cont + line.lstrip()
                 line = line.strip()
@@ -21,6 +24,8 @@ def read_env_file(fname=__fname__):
                         sys.stderr.write(
                             "Err in {fname} line {num}: {line}\n".format_map(locals())
                         )
+                    key: str
+                    val: str
                     key, val = line.split("=")
                     key = key.strip().upper()
                     val = val.strip()
@@ -34,7 +39,7 @@ def read_env_file(fname=__fname__):
         __env_timestamp__ = os.path.getmtime(fname)
 
 
-def load_env_file():
+def load_env_file() -> None:
     try:
         if os.path.getmtime(__fname__) > __env_timestamp__:
             read_env_file()
@@ -42,10 +47,10 @@ def load_env_file():
         pass
 
 
-def env(key, default=None):
+def env(key:str, default: typing.Optional[typing.Any] = None):
     load_env_file()
 
-    key = os.environ[key] if key in os.environ else None
+    key = os.environ[key] if key in os.environ else ""
     if not key:
         return default(key) if callable(default) else default
     if default and callable(default):
@@ -53,7 +58,7 @@ def env(key, default=None):
     return key
 
 
-def auto_default(val):
+def auto_default(val: str) -> typing.Union[str, int, typing.List[pathlib.Path], pathlib.Path]:
     if not val:
         return val
     if val.isdigit():
@@ -64,12 +69,11 @@ def auto_default(val):
         return pathlib.Path(val)
     return val
 
-
 class EnvObj:
 
     def __init__(self, capitalize=False):
-        self.capitalize = capitalize
-        self.default = {}
+        self.capitalize: bool = capitalize
+        self.default: typing.Dict = {}
         self.default_default = None
 
     def defaults(self, **params):
@@ -82,7 +86,7 @@ class EnvObj:
         self.default_default = auto_default
         return self
 
-    def __getattr__(self, name):
+    def __getattr__(self, name: str) -> typing.Union[str, int, typing.List[pathlib.Path], pathlib.Path]:
         if self.capitalize:
             name = name.upper()
         return env(name, default=self.default.get(name, self.default_default))
