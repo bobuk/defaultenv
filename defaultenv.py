@@ -26,7 +26,7 @@ def read_env_file(fname:str =__fname__) -> None:
                         )
                     key: str
                     val: str
-                    key, val = line.split("=")
+                    key, val = line.split("=", 1)
                     key = key.strip().upper()
                     val = val.strip()
                     try:
